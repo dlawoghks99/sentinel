@@ -37,10 +37,13 @@ Sentinel은 서비스에서 발생하는 로그를 수집하고
 ---
 
 ## 프로젝트 구조
+
+```text
 sentinel/
 ├─ backend/
 ├─ frontend/
-├─ infra/
+└─ infra/
+```
 
 ## 향후 계획
 - 실시간 알림 기능
