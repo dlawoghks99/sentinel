@@ -1,0 +1,31 @@
+POST http://localhost:8080/api/logs
+Content-Type: application/json
+
+{
+  "serviceName": "auth-service",
+  "level": "ERROR",
+  "message": "login failed",
+  "responseTimeMs": 1200,
+  "statusCode": 500
+}
+
+###
+
+POST http://localhost:8080/api/logs
+
+###
+
+GET http://localhost:8080/api/logs
+
+###
+
+GET http://localhost:8080/api/logs/slow?ms=1000
+
+### 에러 로그 조회
+GET http://localhost:8080/api/logs/error
+
+### 서비스별 로그 조회
+GET http://localhost:8080/api/logs/service/auth-service
+
+### 로그 통계 조회
+GET http://localhost:8080/api/logs/stats
