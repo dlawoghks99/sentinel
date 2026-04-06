@@ -29,3 +29,72 @@ GET http://localhost:8080/api/logs/service/auth-service
 
 ### 로그 통계 조회
 GET http://localhost:8080/api/logs/stats
+
+
+### 테스트 로그 추가(error)
+POST http://localhost:8080/api/logs
+
+Content-Type: application/json
+
+{
+  "level": "ERROR",
+  "message": "login failed",
+  "responseTimeMs": 1200,
+  "serviceName": "auth-service",
+  "statusCode": 500
+}
+
+### 테스트 로그 추가(INFO)
+POST http://localhost:8080/api/logs
+
+Content-Type: application/json
+
+{
+  "level": "INFO",
+  "message": "user profile loaded",
+  "responseTimeMs": 200,
+  "serviceName": "user-service",
+  "statusCode": 200
+}
+
+### 테스트 로그 추가(WARN)
+POST http://localhost:8080/api/logs
+
+Content-Type: application/json
+
+{
+  "level": "WARN",
+  "message": "payment delayed",
+  "responseTimeMs": 950,
+  "serviceName": "payment-service",
+  "statusCode": 200
+}
+
+### 테스트 로그 추가(ERROR 401)
+POST http://localhost:8080/api/logs
+
+Content-Type: application/json
+
+{
+  "level": "ERROR",
+  "message": "token expired",
+  "responseTimeMs": 400,
+  "serviceName": "auth-service",
+  "statusCode": 401
+}
+
+### 테스트 로그 추가(INFO 401)
+POST http://localhost:8080/api/logs
+
+Content-Type: application/json
+
+{
+  "level": "INFO",
+  "message": "order completed",
+  "responseTimeMs": 300,
+  "serviceName": "order-service",
+  "statusCode": 201
+}
+
+
+
