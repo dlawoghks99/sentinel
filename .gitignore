@@ -24,3 +24,6 @@ frontend/dist/
 
 # ===== infra =====
 infra/.env
+
+# ===== Claude Code =====
+.claude/
