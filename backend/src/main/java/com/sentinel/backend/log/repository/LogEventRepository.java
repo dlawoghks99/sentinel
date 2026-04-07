@@ -15,11 +15,7 @@ public interface LogEventRepository extends JpaRepository<LogEvent, Long> {
 
     Page<LogEvent> findByResponseTimeMsGreaterThan(int ms, Pageable pageable);
 
-    List<LogEvent> findByLevel(String level);
-
     List<LogEvent> findByServiceName(String serviceName);
-
-    List<LogEvent> findByLevelOrderByCreatedAtDesc(String level);
 
     @Query("SELECT l FROM LogEvent l WHERE l.level = 'ERROR' " +
             "AND (:serviceName IS NULL OR l.serviceName LIKE %:serviceName%) " +
@@ -34,4 +30,14 @@ public interface LogEventRepository extends JpaRepository<LogEvent, Long> {
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable
     );
+
+    @Query("SELECT COUNT(l) FROM LogEvent l")
+    long countAll();
+
+    @Query("SELECT COUNT(l) FROM LogEvent l WHERE l.level = 'ERROR'")
+    long countErrors();
+
+    @Query("SELECT AVG(l.responseTimeMs) FROM LogEvent l")
+    double avgResponseTime();
+
 }

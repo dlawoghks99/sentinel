@@ -60,19 +60,10 @@ public class LogEventService {
     }
 
     public LogStatsResponse getStats() {
-        List<LogEvent> logs = repository.findAll();
-
-        long totalCount = logs.size();
-
-        long errorCount = logs.stream()
-                .filter(log -> "ERROR".equals(log.getLevel()))
-                .count();
-
-        double avgResponseTimeMs = logs.stream()
-                .mapToInt(LogEvent::getResponseTimeMs)
-                .average()
-                .orElse(0.0);
-
+        long totalCount = repository.countAll();
+        long errorCount = repository.countErrors();
+        double avgResponseTimeMs = repository.avgResponseTime();
         return new LogStatsResponse(totalCount, errorCount, avgResponseTimeMs);
     }
+
 }
