@@ -23,10 +23,10 @@ public class LogEventService {
     }
 
     // 느린 요청 조회
-    public List<LogEventResponse> getSlowLogs(int threshold) {
-        return repository.findByResponseTimeMsGreaterThan(threshold).stream()
-                .map(LogEventResponse::from)
-                .toList();
+    public Page<LogEventResponse> getSlowLogs(int threshold, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("responseTimeMs").descending());
+        return repository.findByResponseTimeMsGreaterThan(threshold, pageable)
+                .map(LogEventResponse::from);
     }
 
     public LogEvent create(LogEvent logEvent) {

@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface LogEventRepository extends JpaRepository<LogEvent, Long> {
 
-    List<LogEvent> findByResponseTimeMsGreaterThan(int ms);
+    Page<LogEvent> findByResponseTimeMsGreaterThan(int ms, Pageable pageable);
 
     List<LogEvent> findByLevel(String level);
 

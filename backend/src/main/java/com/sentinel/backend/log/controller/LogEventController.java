@@ -36,8 +36,12 @@ public class LogEventController {
     }
 
     @GetMapping("/slow")
-    public List<LogEventResponse> getSlowLogs(@RequestParam int ms) {
-        return service.getSlowLogs(ms);
+    public Page<LogEventResponse> getSlowLogs(
+            @RequestParam int ms,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return service.getSlowLogs(ms, page, size);
     }
 
     @GetMapping("/error")
