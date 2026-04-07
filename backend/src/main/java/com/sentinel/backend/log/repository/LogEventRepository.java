@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +14,7 @@ public interface LogEventRepository extends JpaRepository<LogEvent, Long> {
 
     Page<LogEvent> findByResponseTimeMsGreaterThan(int ms, Pageable pageable);
 
-    List<LogEvent> findByServiceName(String serviceName);
+    Page<LogEvent> findByServiceName(String serviceName, Pageable pageable);
 
     @Query("SELECT l FROM LogEvent l WHERE l.level = 'ERROR' " +
             "AND (:serviceName IS NULL OR l.serviceName LIKE %:serviceName%) " +
@@ -31,13 +30,10 @@ public interface LogEventRepository extends JpaRepository<LogEvent, Long> {
             Pageable pageable
     );
 
-    @Query("SELECT COUNT(l) FROM LogEvent l")
-    long countAll();
-
     @Query("SELECT COUNT(l) FROM LogEvent l WHERE l.level = 'ERROR'")
     long countErrors();
 
-    @Query("SELECT AVG(l.responseTimeMs) FROM LogEvent l")
+    @Query("SELECT COALESCE(AVG(l.responseTimeMs), 0) FROM LogEvent l")
     double avgResponseTime();
 
 }

@@ -1,18 +1,17 @@
 package com.sentinel.backend.log.service;
 
-import com.sentinel.backend.log.entity.LogEvent;
+import com.sentinel.backend.log.dto.request.LogCreateRequest;
+import com.sentinel.backend.log.dto.request.LogSearchRequest;
+
 import com.sentinel.backend.log.repository.LogEventRepository;
-import com.sentinel.backend.log.dto.LogEventResponse;
-import com.sentinel.backend.log.dto.LogStatsResponse;
+import com.sentinel.backend.log.dto.response.LogEventResponse;
+import com.sentinel.backend.log.dto.response.LogStatsResponse;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Pageable;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class LogEventService {
@@ -29,9 +28,8 @@ public class LogEventService {
                 .map(LogEventResponse::from);
     }
 
-    public LogEvent create(LogEvent logEvent) {
-        logEvent.setCreatedAt(LocalDateTime.now());
-        return repository.save(logEvent);
+    public LogEventResponse create(LogCreateRequest request) {
+        return LogEventResponse.from(repository.save(request.toEntity()));
     }
 
     public Page<LogEventResponse> findAll(int page, int size) {
@@ -40,30 +38,27 @@ public class LogEventService {
                 .map(LogEventResponse::from);
     }
 
-    public Page<LogEventResponse> getErrorLogs(
-            String serviceName,
-            String keyword,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
-            int page,
-            int size
-    ) {
+    public Page<LogEventResponse> getErrorLogs(LogSearchRequest req, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return repository.findErrorLogs(serviceName, keyword, startDate, endDate, pageable)
+        return repository.findErrorLogs(
+                req.serviceName(), req.keyword(),
+                req.startDate(), req.endDate(),
+                pageable
+        ).map(LogEventResponse::from);
+    }
+
+    public Page<LogEventResponse> getLogsByService(String serviceName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return repository.findByServiceName(serviceName, pageable)
                 .map(LogEventResponse::from);
     }
 
-    public List<LogEventResponse> getLogsByService(String serviceName) {
-        return repository.findByServiceName(serviceName).stream()
-                .map(LogEventResponse::from)
-                .toList();
-    }
-
     public LogStatsResponse getStats() {
-        long totalCount = repository.countAll();
-        long errorCount = repository.countErrors();
-        double avgResponseTimeMs = repository.avgResponseTime();
-        return new LogStatsResponse(totalCount, errorCount, avgResponseTimeMs);
+        return new LogStatsResponse(
+                repository.count(),
+                repository.countErrors(),
+                repository.avgResponseTime()
+        );
     }
 
 }

@@ -1,16 +1,13 @@
 package com.sentinel.backend.log.controller;
 
-import com.sentinel.backend.log.entity.LogEvent;
-import com.sentinel.backend.log.dto.LogEventResponse;
-import com.sentinel.backend.log.dto.LogStatsResponse;
+import com.sentinel.backend.log.dto.request.LogCreateRequest;
+import com.sentinel.backend.log.dto.request.LogSearchRequest;
+import com.sentinel.backend.log.dto.response.LogEventResponse;
+import com.sentinel.backend.log.dto.response.LogStatsResponse;
 import com.sentinel.backend.log.service.LogEventService;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Page;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/logs")
@@ -23,8 +20,8 @@ public class LogEventController {
     }
 
     @PostMapping
-    public LogEvent create(@RequestBody LogEvent logEvent) {
-        return service.create(logEvent);
+    public LogEventResponse create(@RequestBody LogCreateRequest request) {
+        return service.create(request);
     }
 
     @GetMapping
@@ -46,19 +43,20 @@ public class LogEventController {
 
     @GetMapping("/error")
     public Page<LogEventResponse> getErrorLogs(
-            @RequestParam(required = false) String serviceName,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @ModelAttribute LogSearchRequest searchRequest,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        return service.getErrorLogs(serviceName, keyword, startDate, endDate, page, size);
+        return service.getErrorLogs(searchRequest, page, size);
     }
 
     @GetMapping("/service/{name}")
-    public List<LogEventResponse> getLogsByService(@PathVariable String name) {
-        return service.getLogsByService(name);
+    public Page<LogEventResponse> getLogsByService(
+            @PathVariable String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return service.getLogsByService(name, page, size);
     }
 
     @GetMapping("/stats")
