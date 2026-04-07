@@ -3,6 +3,7 @@ package com.sentinel.backend.log.dto;
 import com.sentinel.backend.log.entity.LogEvent;
 import java.time.LocalDateTime;
 
+
 public class LogEventResponse  {
     private Long id;
     private String level;

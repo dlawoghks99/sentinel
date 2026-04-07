@@ -6,6 +6,10 @@ import com.sentinel.backend.log.dto.LogEventResponse;
 import com.sentinel.backend.log.dto.LogStatsResponse;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,26 +34,23 @@ public class LogEventService {
         return repository.save(logEvent);
     }
 
-    public List<LogEventResponse> findAll() {
-        return repository.findAll().stream()
-                .map(LogEventResponse::from)
-                .toList();
+    public Page<LogEventResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return repository.findAll(pageable)
+                .map(LogEventResponse::from);
     }
 
-    public List<LogEventResponse> getErrorLogs(
+    public Page<LogEventResponse> getErrorLogs(
             String serviceName,
             String keyword,
             LocalDateTime startDate,
-            LocalDateTime endDate
+            LocalDateTime endDate,
+            int page,
+            int size
     ) {
-        return repository.findByLevelOrderByCreatedAtDesc("ERROR")
-                .stream()
-                .filter(log -> serviceName == null || log.getServiceName().contains(serviceName))
-                .filter(log -> keyword == null || log.getMessage().contains(keyword))
-                .filter(log -> startDate == null || !log.getCreatedAt().isBefore(startDate))
-                .filter(log -> endDate == null || !log.getCreatedAt().isAfter(endDate))
-                .map(LogEventResponse::from)
-                .toList();
+        Pageable pageable = PageRequest.of(page, size);
+        return repository.findErrorLogs(serviceName, keyword, startDate, endDate, pageable)
+                .map(LogEventResponse::from);
     }
 
     public List<LogEventResponse> getLogsByService(String serviceName) {

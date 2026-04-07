@@ -7,6 +7,8 @@ import com.sentinel.backend.log.service.LogEventService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,8 +28,11 @@ public class LogEventController {
     }
 
     @GetMapping
-    public List<LogEventResponse> findAll() {
-        return service.findAll();
+    public Page<LogEventResponse> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return service.findAll(page, size);
     }
 
     @GetMapping("/slow")
@@ -36,22 +41,15 @@ public class LogEventController {
     }
 
     @GetMapping("/error")
-    public List<LogEventResponse> getErrorLogs(
-            @RequestParam(value = "serviceName", required = false) String serviceName,
-            @RequestParam(value = "keyword", required = false) String keyword,
-            @RequestParam(value = "startDate", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime startDate,
-            @RequestParam(value = "endDate", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime endDate
+    public Page<LogEventResponse> getErrorLogs(
+            @RequestParam(required = false) String serviceName,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        System.out.println("serviceName = " + serviceName);
-        System.out.println("keyword = " + keyword);
-        System.out.println("startDate = " + startDate);
-        System.out.println("endDate = " + endDate);
-
-        return service.getErrorLogs(serviceName, keyword, startDate, endDate);
+        return service.getErrorLogs(serviceName, keyword, startDate, endDate, page, size);
     }
 
     @GetMapping("/service/{name}")
