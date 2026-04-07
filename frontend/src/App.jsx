@@ -124,7 +124,7 @@ function App() {
       setError("");
 
       const [logsRes, statsRes] = await Promise.all([
-        fetch(`${BASE_URL}/api/logs`),
+        fetch(`${BASE_URL}/api/logs?page=0&size=100`),
         fetch(`${BASE_URL}/api/logs/stats`),
       ]);
 
@@ -139,7 +139,7 @@ function App() {
       const logsData = await logsRes.json();
       const statsData = await statsRes.json();
 
-      setLogs(Array.isArray(logsData) ? logsData : []);
+      setLogs(logsData.content ?? []);
       setStats({
         totalCount: statsData.totalCount ?? 0,
         errorCount: statsData.errorCount ?? 0,
