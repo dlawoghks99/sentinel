@@ -74,7 +74,7 @@ function App() {
     try {
       const response = await fetch(`${BASE_URL}/api/logs/slow?ms=${slowThreshold}`);
       const data = await response.json();
-      setSlowLogs(Array.isArray(data) ? data : []);
+      setSlowLogs(data.content ?? []);
       setSlowCurrentPage(1);
     } catch (err) {
       console.error("느린 로그 조회 실패:", err);
@@ -108,7 +108,7 @@ function App() {
 
       const response = await fetch(url);
       const data = await response.json();
-      setErrorLogs(data);
+      setErrorLogs(data.content ?? []);
     } catch (error) {
       console.error("에러 로그 조회 실패:", error);
     }
