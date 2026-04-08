@@ -96,5 +96,17 @@ Content-Type: application/json
   "statusCode": 201
 }
 
+### Kafka 테스트
+POST http://localhost:8080/api/logs
+Content-Type: application/json
 
+{
+  "serviceName": "test-service",
+  "level": "INFO",
+  "message": "Kafka 테스트 메시지",
+  "responseTimeMs": 100,
+  "statusCode": 200
+}
 
+### Kafka 테스트 확인
+GET http://localhost:8080/api/logs
