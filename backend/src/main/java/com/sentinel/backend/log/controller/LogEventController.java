@@ -8,6 +8,9 @@ import com.sentinel.backend.log.service.LogEventService;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/api/logs")
@@ -26,37 +29,37 @@ public class LogEventController {
 
     @GetMapping
     public Page<LogEventResponse> findAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
     ) {
-        return service.findAll(page, size);
+        return service.findAll(pageable);
     }
 
     @GetMapping("/slow")
     public Page<LogEventResponse> getSlowLogs(
             @RequestParam int ms,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
     ) {
-        return service.getSlowLogs(ms, page, size);
+        return service.getSlowLogs(ms, pageable);
     }
 
     @GetMapping("/error")
     public Page<LogEventResponse> getErrorLogs(
             @ModelAttribute LogSearchRequest searchRequest,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
     ) {
-        return service.getErrorLogs(searchRequest, page, size);
+        return service.getErrorLogs(searchRequest, pageable);
     }
 
     @GetMapping("/service/{name}")
     public Page<LogEventResponse> getLogsByService(
             @PathVariable String name,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
     ) {
-        return service.getLogsByService(name, page, size);
+        return service.getLogsByService(name, pageable);
     }
 
     @GetMapping("/stats")

@@ -9,8 +9,6 @@ import com.sentinel.backend.log.dto.response.LogStatsResponse;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Pageable;
 
 @Service
@@ -22,8 +20,7 @@ public class LogEventService {
     }
 
     // 느린 요청 조회
-    public Page<LogEventResponse> getSlowLogs(int threshold, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("responseTimeMs").descending());
+    public Page<LogEventResponse> getSlowLogs(int threshold, Pageable pageable) {
         return repository.findByResponseTimeMsGreaterThan(threshold, pageable)
                 .map(LogEventResponse::from);
     }
@@ -32,14 +29,11 @@ public class LogEventService {
         return LogEventResponse.from(repository.save(request.toEntity()));
     }
 
-    public Page<LogEventResponse> findAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return repository.findAll(pageable)
-                .map(LogEventResponse::from);
+    public Page<LogEventResponse> findAll(Pageable pageable) {
+        return repository.findAll(pageable).map(LogEventResponse::from);
     }
 
-    public Page<LogEventResponse> getErrorLogs(LogSearchRequest req, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<LogEventResponse> getErrorLogs(LogSearchRequest req, Pageable pageable) {
         return repository.findErrorLogs(
                 req.serviceName(), req.keyword(),
                 req.startDate(), req.endDate(),
@@ -47,8 +41,7 @@ public class LogEventService {
         ).map(LogEventResponse::from);
     }
 
-    public Page<LogEventResponse> getLogsByService(String serviceName, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    public Page<LogEventResponse> getLogsByService(String serviceName,Pageable pageable) {
         return repository.findByServiceName(serviceName, pageable)
                 .map(LogEventResponse::from);
     }
