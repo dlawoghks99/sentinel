@@ -12,19 +12,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 
+import com.sentinel.backend.log.kafka.LogEventProducer;
+import org.springframework.http.ResponseEntity;
+
 @RestController
 @RequestMapping("/api/logs")
 public class LogEventController {
 
     private final LogEventService service;
+    private final LogEventProducer producer;
 
-    public LogEventController(LogEventService service) {
+    public LogEventController(LogEventService service, LogEventProducer producer) {
         this.service = service;
+        this.producer = producer;
     }
 
     @PostMapping
-    public LogEventResponse create(@RequestBody LogCreateRequest request) {
-        return service.create(request);
+    public ResponseEntity<String> create(@RequestBody LogCreateRequest request) {
+        producer.send(request);
+        return ResponseEntity.ok("로그 전송 완료");
     }
 
     @GetMapping
