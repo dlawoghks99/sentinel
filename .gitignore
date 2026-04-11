@@ -27,3 +27,6 @@ infra/.env
 
 # ===== Claude Code =====
 .claude/
+
+# Secret
+backend/src/main/resources/application-local.yml
