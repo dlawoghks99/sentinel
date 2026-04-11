@@ -7,6 +7,7 @@ import TabBar from "./components/TabBar";
 import AllLogsTab from "./components/AllLogsTab";
 import ErrorLogsTab from "./components/ErrorLogsTab";
 import SlowLogsTab from "./components/SlowLogsTab";
+import ChartSection from "./components/ChartSection";
 
 const BASE_URL = "http://localhost:8080";
 const PAGE_SIZE = 5;
@@ -164,6 +165,7 @@ function App() {
           <Header onRefresh={fetchDashboardData} onGenerateTestLogs={generateTestLogs} />
           {error && <div className="error-text">{error}</div>}
           <StatsGrid stats={stats} />
+          <ChartSection logs={logs} />
           <section className="panel">
             <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
             {activeTab === "all" && (
