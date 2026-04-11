@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(indexes = {
+        @Index(name = "idx_log_service_name", columnList = "service_name"),
         @Index(name = "idx_log_level", columnList = "level"),
         @Index(name = "idx_log_created_at", columnList = "created_at"),
         @Index(name = "idx_log_response_time_ms", columnList = "response_time_ms")
