@@ -9,106 +9,37 @@ import ErrorLogsTab from "./components/ErrorLogsTab";
 import SlowLogsTab from "./components/SlowLogsTab";
 import ChartSection from "./components/ChartSection";
 
+import { useDashboard } from "./hooks/useDashboard";
+import { useErrorLogs } from "./hooks/useErrorLogs";
+import { useSlowLogs } from "./hooks/useSlowLogs";
+
 const BASE_URL = "http://localhost:8080";
 const PAGE_SIZE = 5;
 
 function App() {
-  const [logs, setLogs] = useState([]);
-  const [stats, setStats] = useState({ totalCount: 0, errorCount: 0, avgResponseTime: 0, errorRate: 0 });
+  // ── 커스텀 훅 ──────────────────────────────
+  const { logs, stats, hourlyStats, error, loading, fetchDashboardData } = useDashboard();
+  const {
+    errorLogs, errorServiceName, setErrorServiceName,
+    errorKeyword, setErrorKeyword,
+    errorStartDate, setErrorStartDate,
+    errorEndDate, setErrorEndDate,
+    errorCurrentPage, setErrorCurrentPage,
+    fetchErrorLogs
+  } = useErrorLogs();
+  const {
+    slowLogs, slowThreshold, setSlowThreshold,
+    slowServiceFilter, setSlowServiceFilter,
+    slowCurrentPage, setSlowCurrentPage,
+    fetchSlowLogs
+  } = useSlowLogs();
+
   const [keyword, setKeyword] = useState("");
   const [serviceFilter, setServiceFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const [errorLogs, setErrorLogs] = useState([]);
-  const [errorServiceName, setErrorServiceName] = useState("");
-  const [errorKeyword, setErrorKeyword] = useState("");
-  const [errorStartDate, setErrorStartDate] = useState("");
-  const [errorEndDate, setErrorEndDate] = useState("");
-  const [errorCurrentPage, setErrorCurrentPage] = useState(1);
-
-  const [slowLogs, setSlowLogs] = useState([]);
-  const [slowThreshold, setSlowThreshold] = useState(1000);
-  const [slowServiceFilter, setSlowServiceFilter] = useState("");
-  const [slowCurrentPage, setSlowCurrentPage] = useState(1);
-
   const [activeTab, setActiveTab] = useState("all");
 
-  // state 추가 (다른 useState 옆에)
-  const [hourlyStats, setHourlyStats] = useState([]);
-
-  // ── fetch 함수들 ──────────────────────────────
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      setError("");
-
-      // 로그 목록, 통계, 시간대별 통계 병렬 호출
-      const [logsRes, statsRes, hourlyRes] = await Promise.all([
-        fetch(`${BASE_URL}/api/logs?page=0&size=100`),
-        fetch(`${BASE_URL}/api/logs/stats`),
-        fetch(`${BASE_URL}/api/logs/stats/hourly`),
-      ]);
-      if (!logsRes.ok) throw new Error("로그 목록 API 호출 실패");
-      if (!statsRes.ok) throw new Error("통계 API 호출 실패");
-
-      const logsData = await logsRes.json();
-      const statsData = await statsRes.json();
-      const hourlyData = await hourlyRes.json();
-
-      // 로그 목록 세팅
-      setLogs(logsData.content ?? []);
-
-      // 통계 세팅
-      setStats({
-        totalCount: statsData.totalCount ?? 0,
-        errorCount: statsData.errorCount ?? 0,
-        avgResponseTime: statsData.avgResponseTimeMs != null
-            ? parseFloat(statsData.avgResponseTimeMs.toFixed(2)) : 0,
-        errorRate: statsData.totalCount > 0
-            ? ((statsData.errorCount / statsData.totalCount) * 100).toFixed(1) : 0,
-      });
-
-      // 시간대별 통계 세팅
-      setHourlyStats(hourlyData);
-
-    } catch (err) {
-      console.error(err);
-      setError("백엔드 연결에 실패했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchErrorLogs = async () => {
-    try {
-      const params = new URLSearchParams();
-      if (errorServiceName.trim()) params.append("serviceName", errorServiceName);
-      if (errorKeyword.trim()) params.append("keyword", errorKeyword);
-      if (errorStartDate) params.append("startDate", `${errorStartDate}:00`);
-      if (errorEndDate) params.append("endDate", `${errorEndDate}:00`);
-      const qs = params.toString();
-      const res = await fetch(qs ? `${BASE_URL}/api/logs/error?${qs}` : `${BASE_URL}/api/logs/error`);
-      const data = await res.json();
-      setErrorLogs(data.content ?? []);
-      setErrorCurrentPage(1);
-    } catch (err) {
-      console.error("에러 로그 조회 실패:", err);
-    }
-  };
-
-  const fetchSlowLogs = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/logs/slow?ms=${slowThreshold}`);
-      const data = await res.json();
-      setSlowLogs(data.content ?? []);
-      setSlowCurrentPage(1);
-    } catch (err) {
-      console.error("느린 로그 조회 실패:", err);
-    }
-  };
-
+  // ── 테스트 로그 생성 ──────────────────────────────
   const generateTestLogs = async () => {
     const levels = ["INFO", "INFO", "WARN", "ERROR", "ERROR"];
     const services = ["auth-service", "order-service", "payment-service", "user-service", "notification-service"];
