@@ -1,5 +1,8 @@
 package com.sentinel.backend.log.controller;
 
+import com.sentinel.backend.log.dto.response.LogHourlyStatsResponse;
+import java.util.List;
+
 import com.sentinel.backend.log.dto.request.LogCreateRequest;
 import com.sentinel.backend.log.dto.request.LogSearchRequest;
 import com.sentinel.backend.log.dto.response.LogEventResponse;
@@ -71,5 +74,10 @@ public class LogEventController {
     @GetMapping("/stats")
     public LogStatsResponse getStats() {
         return service.getStats();
+    }
+
+    @GetMapping("/stats/hourly")
+    public List<LogHourlyStatsResponse> getHourlyStats() {
+        return service.getHourlyStats();
     }
 }
