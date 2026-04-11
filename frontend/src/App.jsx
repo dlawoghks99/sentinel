@@ -109,8 +109,10 @@ function App() {
         <div className="container">
           <Header onRefresh={fetchDashboardData} onGenerateTestLogs={generateTestLogs} />
           {error && <div className="error-text">{error}</div>}
-          <StatsGrid stats={stats} />
-          <ChartSection logs={logs} hourlyStats={hourlyStats} />
+          <div style={{ overflow: "hidden" }}>
+            <StatsGrid stats={stats} hourlyStats={hourlyStats}/>
+            <ChartSection logs={logs} hourlyStats={hourlyStats} />
+          </div>
           <section className="panel">
             <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
             {activeTab === "all" && (
