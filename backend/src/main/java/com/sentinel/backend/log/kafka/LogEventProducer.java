@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sentinel.backend.log.dto.request.LogCreateRequest;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class LogEventProducer {
 
@@ -21,9 +23,13 @@ public class LogEventProducer {
     public void send(LogCreateRequest request) {
         try {
             String message = objectMapper.writeValueAsString(request);
-            kafkaTemplate.send(TOPIC, message);
+            kafkaTemplate.send(TOPIC, message).whenComplete((result, ex) -> {
+                if (ex != null) {
+                    log.error("Kafka 전송 실패: {}", ex.getMessage());
+                }
+            });
         } catch (Exception e) {
-            throw new RuntimeException("Kafka 메시지 전송 실패", e);
+            log.error("Kafka 메시지 직렬화 실패: {}", e.getMessage());
         }
     }
 }

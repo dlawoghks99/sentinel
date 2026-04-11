@@ -4,7 +4,7 @@ import com.sentinel.backend.log.entity.LogEvent;
 import java.time.LocalDateTime;
 
 
-public record LogEventResponse(Long id, String level, String message, int responseTimeMs, String serviceName, int statusCode, LocalDateTime createdAt)  {
+public record LogEventResponse(Long id, String level, String message, Integer responseTimeMs, String serviceName, Integer statusCode, LocalDateTime createdAt)  {
 
     public static LogEventResponse from(LogEvent logEvent) {
         return new LogEventResponse(
