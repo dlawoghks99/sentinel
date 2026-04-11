@@ -1,5 +1,9 @@
 package com.sentinel.backend.log.service;
 
+import com.sentinel.backend.log.dto.response.LogHourlyStatsResponse;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.sentinel.backend.log.dto.request.LogCreateRequest;
 import com.sentinel.backend.log.dto.request.LogSearchRequest;
 
@@ -52,6 +56,17 @@ public class LogEventService {
                 repository.countErrors(),
                 repository.avgResponseTime()
         );
+    }
+
+    public List<LogHourlyStatsResponse> getHourlyStats() {
+        LocalDateTime from = LocalDateTime.now().minusHours(24);
+        return repository.findHourlyStats(from).stream()
+                .map(row -> new LogHourlyStatsResponse(
+                        row[0].toString().substring(11, 16),
+                        ((Number) row[1]).longValue(),
+                        ((Number) row[2]).longValue()
+                ))
+                .toList();
     }
 
 }

@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:sentinel}
-    username: ${POSTGRES_USER:sentinel}
-    password: ${POSTGRES_PASSWORD:sentinel_local_2026}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -12,7 +12,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
+  data:
+    web:
+      pageable:
+        serialization-mode: via-dto
   kafka:
     bootstrap-servers: localhost:9092
     producer:

@@ -96,7 +96,7 @@ Content-Type: application/json
   "statusCode": 201
 }
 
-### Kafka 테스트
+### Kafka 테스트(성공)
 POST http://localhost:8080/api/logs
 Content-Type: application/json
 
@@ -110,3 +110,11 @@ Content-Type: application/json
 
 ### Kafka 테스트 확인
 GET http://localhost:8080/api/logs
+
+### Kafka 테스트(실패)
+POST http://localhost:8080/api/logs
+Content-Type: application/json
+
+{
+  "invalidField": "이상한데이터"
+}

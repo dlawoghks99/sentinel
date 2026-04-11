@@ -5,7 +5,9 @@ import com.sentinel.backend.log.dto.request.LogCreateRequest;
 import com.sentinel.backend.log.repository.LogEventRepository;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class LogEventConsumer {
 
@@ -27,7 +29,7 @@ public class LogEventConsumer {
             LogCreateRequest request = objectMapper.readValue(message, LogCreateRequest.class);
             repository.save(request.toEntity());
         } catch (Exception e) {
-            throw new RuntimeException("Kafka 메시지 처리 실패", e);
+            log.error("Kafka 메시지 처리 실패: {}", message, e);
         }
     }
 }
