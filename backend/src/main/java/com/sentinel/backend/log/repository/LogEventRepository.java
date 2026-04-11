@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,5 +36,14 @@ public interface LogEventRepository extends JpaRepository<LogEvent, Long> {
 
     @Query("SELECT COALESCE(AVG(l.responseTimeMs), 0) FROM LogEvent l")
     double avgResponseTime();
+
+    @Query("SELECT FUNCTION('date_trunc', 'hour', l.createdAt) as hour, " +
+            "COUNT(l) as total, " +
+            "SUM(CASE WHEN l.level = 'ERROR' THEN 1 ELSE 0 END) as errorCount " +
+            "FROM LogEvent l " +
+            "WHERE l.createdAt >= :from " +
+            "GROUP BY FUNCTION('date_trunc', 'hour', l.createdAt) " +
+            "ORDER BY FUNCTION('date_trunc', 'hour', l.createdAt) ASC")
+    List<Object[]> findHourlyStats(@Param("from") LocalDateTime from);
 
 }

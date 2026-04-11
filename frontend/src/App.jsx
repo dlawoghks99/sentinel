@@ -35,22 +35,32 @@ function App() {
 
   const [activeTab, setActiveTab] = useState("all");
 
+  // state 추가 (다른 useState 옆에)
+  const [hourlyStats, setHourlyStats] = useState([]);
+
   // ── fetch 함수들 ──────────────────────────────
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       setError("");
-      const [logsRes, statsRes] = await Promise.all([
+
+      // 로그 목록, 통계, 시간대별 통계 병렬 호출
+      const [logsRes, statsRes, hourlyRes] = await Promise.all([
         fetch(`${BASE_URL}/api/logs?page=0&size=100`),
         fetch(`${BASE_URL}/api/logs/stats`),
+        fetch(`${BASE_URL}/api/logs/stats/hourly`),
       ]);
       if (!logsRes.ok) throw new Error("로그 목록 API 호출 실패");
       if (!statsRes.ok) throw new Error("통계 API 호출 실패");
 
       const logsData = await logsRes.json();
       const statsData = await statsRes.json();
+      const hourlyData = await hourlyRes.json();
 
+      // 로그 목록 세팅
       setLogs(logsData.content ?? []);
+
+      // 통계 세팅
       setStats({
         totalCount: statsData.totalCount ?? 0,
         errorCount: statsData.errorCount ?? 0,
@@ -59,6 +69,10 @@ function App() {
         errorRate: statsData.totalCount > 0
             ? ((statsData.errorCount / statsData.totalCount) * 100).toFixed(1) : 0,
       });
+
+      // 시간대별 통계 세팅
+      setHourlyStats(hourlyData);
+
     } catch (err) {
       console.error(err);
       setError("백엔드 연결에 실패했습니다.");
@@ -165,7 +179,7 @@ function App() {
           <Header onRefresh={fetchDashboardData} onGenerateTestLogs={generateTestLogs} />
           {error && <div className="error-text">{error}</div>}
           <StatsGrid stats={stats} />
-          <ChartSection logs={logs} />
+          <ChartSection logs={logs} hourlyStats={hourlyStats} />
           <section className="panel">
             <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
             {activeTab === "all" && (

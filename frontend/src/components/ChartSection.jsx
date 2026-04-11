@@ -1,4 +1,4 @@
-import { Doughnut, Bar } from "react-chartjs-2";
+import { Doughnut, Bar, Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
     ArcElement,
@@ -7,11 +7,13 @@ import {
     CategoryScale,
     LinearScale,
     BarElement,
+    LineElement,
+    PointElement,
 } from "chart.js";
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement);
 
-export default function ChartSection({ logs }) {
+export default function ChartSection({ logs, hourlyStats }) {
     const levelCounts = logs.reduce((acc, log) => {
         acc[log.level] = (acc[log.level] || 0) + 1;
         return acc;
@@ -59,6 +61,28 @@ export default function ChartSection({ logs }) {
         }],
     };
 
+    const lineData = {
+        labels: hourlyStats.map(s => s.hour),
+        datasets: [
+            {
+                label: "전체",
+                data: hourlyStats.map(s => s.total),
+                borderColor: "#3b82f6",
+                backgroundColor: "#3b82f620",
+                tension: 0.4,
+                fill: true,
+            },
+            {
+                label: "에러",
+                data: hourlyStats.map(s => s.errorCount),
+                borderColor: "#ef4444",
+                backgroundColor: "#ef444420",
+                tension: 0.4,
+                fill: true,
+            },
+        ],
+    };
+
     const baseOptions = {
         maintainAspectRatio: false,
         plugins: {
@@ -68,7 +92,7 @@ export default function ChartSection({ logs }) {
         },
         scales: {
             x: {
-                ticks: { color: "#64748b", font: { size: 10, weight: "500" } },
+                ticks: { color: "#64748b", font: { size: 9, weight: "500" }, maxRotation: 0 },
                 grid: { color: "#ffffff10" },
             },
             y: {
@@ -96,19 +120,23 @@ export default function ChartSection({ logs }) {
             <p style={{ color: "#64748b", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
                 로그 분석
             </p>
-            <div style={{ display: "flex", gap: "1.5rem", marginBottom: "1.5rem" }}>
-                <div style={{ flex: 1, height: "200px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.5rem" }}>
+                <div style={{ height: "230px" }}>
                     <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "0.5rem" }}>레벨별 분포</p>
                     <Doughnut data={doughnutData} options={doughnutOptions} />
                 </div>
-                <div style={{ flex: 2, height: "200px" }}>
+                <div style={{ height: "200px" }}>
                     <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "0.5rem" }}>서비스별 로그 수</p>
                     <Bar data={barData} options={baseOptions} />
                 </div>
-            </div>
-            <div style={{ height: "200px", overflow: "visible" }}>
-                <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "0.5rem" }}>응답시간 분포</p>
-                <Bar data={responseTimeData} options={baseOptions} />
+                <div style={{ height: "230px" }}>
+                    <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "0.5rem" }}>응답시간 분포</p>
+                    <Bar data={responseTimeData} options={baseOptions} />
+                </div>
+                <div style={{ height: "200px" }}>
+                    <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "0.5rem" }}>시간대별 로그 추이</p>
+                    <Line data={lineData} options={baseOptions} />
+                </div>
             </div>
         </div>
     );
