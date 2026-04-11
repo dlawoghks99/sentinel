@@ -116,26 +116,26 @@ export default function ChartSection({ logs, hourlyStats }) {
     };
 
     return (
-        <div style={{ margin: "1.5rem 0", padding: "1.5rem", background: "#1e2130", borderRadius: "12px" }}>
+        <div style={{ margin: "1.5rem 0", padding: "1.5rem", background: "#1e2130", borderRadius: "12px", overflow: "hidden" }}>
             <p style={{ color: "#64748b", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
                 로그 분석
             </p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.5rem" }}>
-                <div style={{ height: "230px" }}>
+            <div style={{display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem" }}>
+                <div style={{ height: "250px" }}>
                     <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "0.5rem" }}>레벨별 분포</p>
-                    <Doughnut data={doughnutData} options={doughnutOptions} />
+                    <Doughnut data={doughnutData} options={doughnutOptions} redraw />
                 </div>
-                <div style={{ height: "200px" }}>
+                <div style={{ height: "280px" }}>
                     <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "0.5rem" }}>서비스별 로그 수</p>
-                    <Bar data={barData} options={baseOptions} />
+                    <Bar data={barData} options={baseOptions} redraw />
                 </div>
-                <div style={{ height: "230px" }}>
+                <div style={{ height: "250px" }}>
                     <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "0.5rem" }}>응답시간 분포</p>
-                    <Bar data={responseTimeData} options={baseOptions} />
+                    <Bar data={responseTimeData} options={baseOptions} redraw />
                 </div>
-                <div style={{ height: "200px" }}>
+                <div style={{ height: "250px" }}>
                     <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "0.5rem" }}>시간대별 로그 추이</p>
-                    <Line data={lineData} options={baseOptions} />
+                    <Line data={lineData} options={baseOptions} redraw />
                 </div>
             </div>
         </div>
