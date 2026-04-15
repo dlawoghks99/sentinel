@@ -18,6 +18,9 @@ jobs:
           script: |
             cd /home/ubuntu/sentinel
             git pull origin main
-            cd infra
+            cd frontend
+            npm install
+            npm run build
+            cd ../infra
             docker-compose down
             docker-compose up -d --build
