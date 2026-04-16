@@ -15,6 +15,7 @@ import java.util.Random;
 public class MockLogScheduler {
 
     private final LogEventService logEventService;
+    private final SlackNotifier slackNotifier;
     private final Random random = new Random();
 
     private static final List<String> SERVICE_NAMES = List.of(
@@ -60,5 +61,17 @@ public class MockLogScheduler {
 
         logEventService.create(request);
         log.info("[MockScheduler] 로그 생성: {} {} {}ms", level, request.serviceName(), responseTimeMs);
+
+        if ("ERROR".equals(level) || "WARN".equals(level)) {
+            String emoji = "ERROR".equals(level) ? "🔴" : "🟡";
+            slackNotifier.sendAlert(
+                    emoji + " *[Sentinel 알림]*\n" +
+                            "• 서비스: " + request.serviceName() + "\n" +
+                            "• 레벨: " + level + "\n" +
+                            "• 메시지: " + request.message() + "\n" +
+                            "• 응답시간: " + responseTimeMs + "ms\n" +
+                            "• 상태코드: " + statusCode
+            );
+        }
     }
 }
