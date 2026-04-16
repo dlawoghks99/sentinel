@@ -17,7 +17,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu/sentinel
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             cd frontend
             npm install
             npm run build
