@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:16
     container_name: sentinel-postgres
-    restart: unless-stopped
+    restart: always
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -15,7 +15,7 @@ services:
   kafka:
     image: apache/kafka:3.7.0
     container_name: sentinel-kafka
-    restart: unless-stopped
+    restart: always
     ports:
       - "9092:9092"
     environment:
@@ -32,7 +32,7 @@ services:
       context: ../backend
       dockerfile: Dockerfile
     container_name: sentinel-backend
-    restart: unless-stopped
+    restart: always
     ports:
       - "8080:8080"
     environment:
