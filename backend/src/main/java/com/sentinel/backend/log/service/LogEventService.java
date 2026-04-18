@@ -56,7 +56,14 @@ public class LogEventService {
                 .map(LogEventResponse::from);
     }
 
-    public LogStatsResponse getStats() {
+    public LogStatsResponse getStats(LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate != null && endDate != null) {
+            return new LogStatsResponse(
+                    repository.countByCreatedAtBetween(startDate, endDate),
+                    repository.countErrorsByCreatedAtBetween(startDate, endDate),
+                    repository.avgResponseTimeByCreatedAtBetween(startDate, endDate)
+            );
+        }
         return new LogStatsResponse(
                 repository.count(),
                 repository.countErrors(),

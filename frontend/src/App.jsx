@@ -18,7 +18,7 @@ const PAGE_SIZE = 5;
 
 function App() {
   // ── 커스텀 훅 ──────────────────────────────
-  const { logs, stats, hourlyStats, error, loading, fetchDashboardData } = useDashboard();
+  const { logs, stats, hourlyStats, error, loading, timeRange, setTimeRange, fetchDashboardData } = useDashboard();
   const {
     errorLogs, errorServiceName, setErrorServiceName,
     errorKeyword, setErrorKeyword,
@@ -108,6 +108,34 @@ function App() {
       <div className="app">
         <div className="container">
           <Header onRefresh={fetchDashboardData} onGenerateTestLogs={generateTestLogs} />
+          {/* 시간 범위 선택 버튼 */}
+          <div style={{ display: "flex", gap: "8px", margin: "12px 0" }}>
+            {[
+              { label: "전체", value: null },
+              { label: "1시간", value: 1 },
+              { label: "6시간", value: 6 },
+              { label: "24시간", value: 24 },
+              { label: "7일", value: 168 },
+            ].map(({ label, value }) => (
+                <button
+                    key={label}
+                    onClick={() => setTimeRange(value)}
+                    style={{
+                      padding: "8px 20px",
+                      borderRadius: "6px",
+                      border: "none",
+                      backgroundColor: timeRange === value ? "#4f46e5" : "#1e1e2e",
+                      color: timeRange === value ? "#fff" : "#a0a0b0",
+                      cursor: "pointer",
+                      fontWeight: timeRange === value ? "bold" : "normal",
+                      fontSize: "14px",
+                      transition: "all 0.2s",
+                    }}
+                >
+                  {label}
+                </button>
+            ))}
+          </div>
           {error && <div className="error-text">{error}</div>}
           <div style={{ overflow: "hidden" }}>
             <StatsGrid stats={stats} hourlyStats={hourlyStats}/>
