@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -8,39 +8,40 @@ export function useDashboard() {
     const [hourlyStats, setHourlyStats] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [timeRange, setTimeRange] = useState(null); // null = 전체
+    const [timeRange, setTimeRange] = useState(null);
 
-    const fetchDashboardData = async () => {
+    const fetchDashboardData = useCallback(async (range) => {
         try {
             setLoading(true);
             setError("");
 
             const now = new Date();
+            const offset = 9 * 60 * 60 * 1000;
             let startDate = null;
-            if (timeRange) {
-                const start = new Date(now - timeRange * 60 * 60 * 1000);
-                startDate = start.toISOString().slice(0, 19);
+            if (range) {
+                const start = new Date(now - range * 60 * 60 * 1000);
+                startDate = new Date(start.getTime() + offset).toISOString().slice(0, 19);
             }
-            const endDate = now.toISOString().slice(0, 19);
+            const endDate = new Date(now.getTime() + offset + 60 * 1000).toISOString().slice(0, 19);
 
-            const params = new URLSearchParams({ page: 0, size: 100 });
-            if (startDate) params.append("startDate", startDate);
-            if (timeRange) params.append("endDate", endDate);
+            const logsUrl = `${BASE_URL}/api/logs?page=0&size=100${startDate ? `&startDate=${startDate}&endDate=${endDate}` : ""}`;
+            const statsUrl = `${BASE_URL}/api/logs/stats${startDate ? `?startDate=${startDate}&endDate=${endDate}` : ""}`;
 
-            const [logsRes, statsRes, hourlyRes] = await Promise.all([
-                fetch(`${BASE_URL}/api/logs?${params}`),
-                fetch(`${BASE_URL}/api/logs/stats`),
+            const [logsRes, hourlyRes, statsRes] = await Promise.all([
+                fetch(logsUrl),
                 fetch(`${BASE_URL}/api/logs/stats/hourly`),
+                fetch(statsUrl),
             ]);
 
             if (!logsRes.ok) throw new Error("로그 목록 API 호출 실패");
             if (!statsRes.ok) throw new Error("통계 API 호출 실패");
 
             const logsData = await logsRes.json();
-            const statsData = await statsRes.json();
             const hourlyData = await hourlyRes.json();
+            const statsData = await statsRes.json();
+            const content = logsData.content ?? [];
 
-            setLogs(logsData.content ?? []);
+            setLogs(content);
             setStats({
                 totalCount: statsData.totalCount ?? 0,
                 errorCount: statsData.errorCount ?? 0,
@@ -57,14 +58,13 @@ export function useDashboard() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    // 5초마다 자동 갱신
     useEffect(() => {
-        fetchDashboardData();
-        const interval = setInterval(fetchDashboardData, 5000);
+        fetchDashboardData(timeRange);
+        const interval = setInterval(() => fetchDashboardData(timeRange), 5000);
         return () => clearInterval(interval);
     }, [timeRange]);
 
-    return { logs, stats, hourlyStats, error, loading, timeRange, setTimeRange, fetchDashboardData };
+    return { logs, stats, hourlyStats, error, loading, timeRange, setTimeRange, fetchDashboardData: () => fetchDashboardData(timeRange) };
 }

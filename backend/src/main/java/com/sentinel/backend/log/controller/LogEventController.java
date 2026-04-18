@@ -77,8 +77,11 @@ public class LogEventController {
     }
 
     @GetMapping("/stats")
-    public LogStatsResponse getStats() {
-        return service.getStats();
+    public LogStatsResponse getStats(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        return service.getStats(startDate, endDate);
     }
 
     @GetMapping("/stats/hourly")
