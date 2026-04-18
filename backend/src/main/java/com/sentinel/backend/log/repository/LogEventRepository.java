@@ -46,4 +46,5 @@ public interface LogEventRepository extends JpaRepository<LogEvent, Long> {
             "ORDER BY FUNCTION('date_trunc', 'hour', l.createdAt) ASC")
     List<Object[]> findHourlyStats(@Param("from") LocalDateTime from);
 
+    int deleteByCreatedAtBefore(LocalDateTime cutoff);
 }
