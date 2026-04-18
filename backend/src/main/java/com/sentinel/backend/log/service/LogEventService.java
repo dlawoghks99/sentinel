@@ -33,7 +33,13 @@ public class LogEventService {
         return LogEventResponse.from(repository.save(request.toEntity()));
     }
 
-    public Page<LogEventResponse> findAll(Pageable pageable) {
+    public Page<LogEventResponse> findAll(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+
+        if (startDate != null || endDate != null) {
+            return repository.findByCreatedAtBetween(startDate, endDate, pageable)
+                    .map(LogEventResponse::from);
+        }
+
         return repository.findAll(pageable).map(LogEventResponse::from);
     }
 

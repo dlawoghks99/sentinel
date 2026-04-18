@@ -18,6 +18,9 @@ import org.springframework.data.web.PageableDefault;
 import com.sentinel.backend.log.kafka.LogEventProducer;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/api/logs")
 public class LogEventController {
@@ -38,10 +41,12 @@ public class LogEventController {
 
     @GetMapping
     public Page<LogEventResponse> findAll(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        return service.findAll(pageable);
+        return service.findAll(startDate, endDate, pageable);
     }
 
     @GetMapping("/slow")
