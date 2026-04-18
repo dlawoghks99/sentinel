@@ -49,4 +49,13 @@ public interface LogEventRepository extends JpaRepository<LogEvent, Long> {
     int deleteByCreatedAtBefore(LocalDateTime cutoff);
 
     Page<LogEvent> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
+    @Query("SELECT COUNT(l) FROM LogEvent l WHERE l.createdAt BETWEEN :startDate AND :endDate")
+    long countByCreatedAtBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(l) FROM LogEvent l WHERE l.level = 'ERROR' AND l.createdAt BETWEEN :startDate AND :endDate")
+    long countErrorsByCreatedAtBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COALESCE(AVG(l.responseTimeMs), 0) FROM LogEvent l WHERE l.createdAt BETWEEN :startDate AND :endDate")
+    double avgResponseTimeByCreatedAtBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }
