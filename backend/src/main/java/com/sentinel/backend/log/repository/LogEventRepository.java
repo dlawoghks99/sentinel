@@ -47,4 +47,6 @@ public interface LogEventRepository extends JpaRepository<LogEvent, Long> {
     List<Object[]> findHourlyStats(@Param("from") LocalDateTime from);
 
     int deleteByCreatedAtBefore(LocalDateTime cutoff);
+
+    Page<LogEvent> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 }

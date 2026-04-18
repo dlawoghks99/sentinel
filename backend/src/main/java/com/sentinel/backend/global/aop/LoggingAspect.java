@@ -29,6 +29,13 @@ public class LoggingAspect {
         String uri = request.getRequestURI();
         long start = System.currentTimeMillis();
 
+        // POST /api/logs, 대시보드 내부 호출, 정적 리소스 제외
+        if ("POST".equals(method)
+                || uri.startsWith("/api/logs")
+                || uri.contains("favicon")) {
+            return joinPoint.proceed();
+        }
+
         Object result;
         String level = "INFO";
         int statusCode = 200;
