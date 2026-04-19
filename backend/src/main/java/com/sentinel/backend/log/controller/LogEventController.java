@@ -41,21 +41,24 @@ public class LogEventController {
 
     @GetMapping
     public Page<LogEventResponse> findAll(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String serviceName,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        return service.findAll(startDate, endDate, pageable);
+        return service.findAll(keyword, serviceName, startDate, endDate, pageable);
     }
 
     @GetMapping("/slow")
     public Page<LogEventResponse> getSlowLogs(
             @RequestParam int ms,
+            @RequestParam(required = false) String serviceName,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        return service.getSlowLogs(ms, pageable);
+        return service.getSlowLogs(ms, serviceName, pageable);
     }
 
     @GetMapping("/error")

@@ -33,7 +33,7 @@ body {
 .app {
   min-height: 100vh;
   background: #0b1120;
-  padding: 40px 0 60px; /* 좌우 패딩 제거 */
+  padding: 40px 0 60px;
 }
 
 .container {
@@ -45,6 +45,9 @@ body {
   gap: 24px;
 }
 
+/* ═══════════════════════════════════════════
+   Header
+   ═══════════════════════════════════════════ */
 .header {
   text-align: center;
   margin-bottom: 32px;
@@ -61,6 +64,33 @@ body {
   margin: 0 0 20px;
   color: var(--muted);
   font-size: 18px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.current-time {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 14px;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+  background: #1e1e2e;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #2e2e3e;
+  white-space: nowrap;
 }
 
 .refresh-button {
@@ -80,6 +110,9 @@ body {
   transform: translateY(-1px);
 }
 
+/* ═══════════════════════════════════════════
+   Stats Grid
+   ═══════════════════════════════════════════ */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -120,6 +153,9 @@ body {
   font-size: 14px;
 }
 
+/* ═══════════════════════════════════════════
+   Panel
+   ═══════════════════════════════════════════ */
 .panel {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -145,9 +181,12 @@ body {
   font-size: 15px;
 }
 
+/* ═══════════════════════════════════════════
+   Filters & Inputs
+   ═══════════════════════════════════════════ */
 .filter-row {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -168,6 +207,46 @@ body {
   border-color: var(--accent);
 }
 
+/* 다크 테마 날짜/시간 입력 */
+.input[type="datetime-local"],
+.input[type="date"],
+.input[type="time"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="time"] {
+  color-scheme: dark !important;
+}
+
+.input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.input[type="date"]::-webkit-calendar-picker-indicator,
+.input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(100) !important;
+  cursor: pointer !important;
+  opacity: 0.85 !important;
+  padding-left: 4px !important;
+}
+
+.input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+.input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1 !important;
+}
+
+/* 날짜/시간 텍스트 색상 */
+.input[type="datetime-local"]::-webkit-datetime-edit,
+.input[type="date"]::-webkit-datetime-edit,
+input[type="datetime-local"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit {
+  color: var(--text) !important;
+}
+
+/* ═══════════════════════════════════════════
+   Table
+   ═══════════════════════════════════════════ */
 .table-top {
   display: flex;
   justify-content: space-between;
@@ -243,6 +322,81 @@ tbody tr:hover {
   border: 1px solid rgba(248, 113, 113, 0.2);
 }
 
+/* ═══════════════════════════════════════════
+   Tab Bar
+   ═══════════════════════════════════════════ */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+.tab-btn {
+  padding: 10px 22px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  border-radius: 0;
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--text);
+}
+
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ═══════════════════════════════════════════
+   Pagination
+   ═══════════════════════════════════════════ */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.page-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.page-btn.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.page-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ═══════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════ */
 @media (max-width: 1400px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -279,85 +433,4 @@ tbody tr:hover {
   .filter-row {
     grid-template-columns: 1fr;
   }
-}
-
-input[type="datetime-local"] {
-  color-scheme: dark;
-}
-
-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  cursor: pointer;
-}
-
-.filter-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.tab-bar {
-  display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 24px;
-}
-
-.tab-btn {
-  padding: 10px 22px;
-  border: none;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -1px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
-  border-radius: 0;
-}
-
-.tab-btn:hover:not(.active) {
-  color: var(--text);
-}
-
-.tab-btn.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  margin-top: 20px;
-}
-
-.page-btn {
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--muted);
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.page-btn:hover:not(:disabled) {
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
-.page-btn.active {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
-}
-
-.page-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
 }

@@ -13,31 +13,28 @@ import {
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement);
 
-export default function ChartSection({ logs, hourlyStats }) {
-    const levelCounts = logs.reduce((acc, log) => {
-        acc[log.level] = (acc[log.level] || 0) + 1;
-        return acc;
-    }, {});
+export default function ChartSection({ stats, hourlyStats }) {
+    // ⭐ 안전 장치: stats 가 아직 로딩 중일 때 기본값
+    const levelDist = stats.levelDistribution ?? { info: 0, warn: 0, error: 0 };
+    const serviceDist = stats.serviceDistribution ?? {};
+    const timeDist = stats.responseTimeDistribution ?? { fast: 0, normal: 0, slow: 0 };
 
+    // ─── 1. 도넛 차트: 레벨별 분포 ───
     const doughnutData = {
-        labels: Object.keys(levelCounts),
+        labels: ["INFO", "WARN", "ERROR"],
         datasets: [{
-            data: Object.values(levelCounts),
-            backgroundColor: ["#ef4444", "#f59e0b", "#3b82f6", "#10b981"],
+            data: [levelDist.info, levelDist.warn, levelDist.error],
+            backgroundColor: ["#3b82f6", "#f59e0b", "#ef4444"],
             borderWidth: 0,
         }],
     };
 
-    const serviceCount = logs.reduce((acc, log) => {
-        if (log.serviceName) acc[log.serviceName] = (acc[log.serviceName] || 0) + 1;
-        return acc;
-    }, {});
-
+    // ─── 2. 막대 차트: 서비스별 분포 ───
     const barData = {
-        labels: Object.keys(serviceCount),
+        labels: Object.keys(serviceDist),
         datasets: [{
             label: "로그 수",
-            data: Object.values(serviceCount),
+            data: Object.values(serviceDist),
             backgroundColor: "#3b82f680",
             borderColor: "#3b82f6",
             borderWidth: 1,
@@ -45,15 +42,12 @@ export default function ChartSection({ logs, hourlyStats }) {
         }],
     };
 
+    // ─── 3. 막대 차트: 응답시간 분포 ───
     const responseTimeData = {
         labels: ["빠름 (~200ms)", "보통 (200~1000ms)", "느림 (1000ms+)"],
         datasets: [{
             label: "로그 수",
-            data: [
-                logs.filter(l => l.responseTimeMs !== null && l.responseTimeMs <= 200).length,
-                logs.filter(l => l.responseTimeMs !== null && l.responseTimeMs > 200 && l.responseTimeMs <= 1000).length,
-                logs.filter(l => l.responseTimeMs !== null && l.responseTimeMs > 1000).length,
-            ],
+            data: [timeDist.fast, timeDist.normal, timeDist.slow],
             backgroundColor: ["#10b98180", "#f59e0b80", "#ef444480"],
             borderColor: ["#10b981", "#f59e0b", "#ef4444"],
             borderWidth: 1,
@@ -61,6 +55,7 @@ export default function ChartSection({ logs, hourlyStats }) {
         }],
     };
 
+    // ─── 4. 라인 차트: 시간대별 추이 (그대로 유지) ───
     const lineData = {
         labels: hourlyStats.map(s => s.hour),
         datasets: [
@@ -83,6 +78,7 @@ export default function ChartSection({ logs, hourlyStats }) {
         ],
     };
 
+    // ─── 차트 공통 옵션 (그대로) ───
     const baseOptions = {
         maintainAspectRatio: false,
         plugins: {
