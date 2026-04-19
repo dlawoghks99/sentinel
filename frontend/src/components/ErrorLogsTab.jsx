@@ -18,7 +18,6 @@ function ErrorLogsTab({
                           startDate, setStartDate,
                           endDate, setEndDate,
                           currentPage, totalPages, onPageChange,
-                          onSearch,
                       }) {
     return (
         <>
@@ -27,14 +26,13 @@ function ErrorLogsTab({
                        value={serviceName} onChange={(e) => setServiceName(e.target.value)} />
                 <input className="input" type="text" placeholder="키워드"
                        value={keyword} onChange={(e) => setKeyword(e.target.value)} />
-                <input className="input" type="datetime-local"
+                <input className="input date-input" type="datetime-local"
                        value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                <input className="input" type="datetime-local"
+                <input className="input date-input" type="datetime-local"
                        value={endDate} onChange={(e) => setEndDate(e.target.value)} />
             </div>
             <div className="table-top">
                 <span className="table-count">총 {totalCount}건</span>
-                <button className="refresh-button" onClick={onSearch}>에러 로그 조회</button>
             </div>
             <LogTable logs={logs} columns={COLUMNS} emptyText="에러 로그가 없습니다." />
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
