@@ -17,7 +17,6 @@ function SlowLogsTab({
                          threshold, setThreshold,
                          serviceFilter, setServiceFilter,
                          currentPage, totalPages, onPageChange,
-                         onSearch,
                      }) {
     return (
         <>
@@ -29,7 +28,6 @@ function SlowLogsTab({
             </div>
             <div className="table-top">
                 <span className="table-count">총 {totalCount}건</span>
-                <button className="refresh-button" onClick={onSearch}>느린 로그 조회</button>
             </div>
             <LogTable logs={logs} columns={COLUMNS} emptyText="조회된 느린 로그가 없습니다." />
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />

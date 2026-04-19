@@ -12,6 +12,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          time_zone: UTC
+  jackson:
+    time-zone: UTC
   data:
     web:
       pageable:
@@ -29,7 +33,7 @@ spring:
 
 server:
   port: 8080
-  
+
 slack:
   webhook:
     url: ${SLACK_WEBHOOK_URL}
